@@ -4,21 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Back-to-School Prep Tracker</title>
+    <!-- Import Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --card-bg: #1e1e1e;
-            --text-color: #d4d4d4;
-            --text-secondary: #858585;
-            --accent: #4ec9b0;
-            --accent-glow: rgba(78, 201, 176, 0.2);
-            --border: #333333;
-            --item-bg: #252526;
-            --item-hover: #2a2d2e;
-            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            --bg-color: #ffffff; /* Notion White */
+            --text-color: #37352f; /* Notion Default Text */
+            --text-secondary: #9b9a97;
+            --accent: #087ea4; /* Your Teal */
+            --border: #e0e0e0;
+            --item-bg: #f7f6f3; /* Notion Gray Background */
+            --item-hover: #e9e8e4;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
         }
 
         body {
-            font-family: var(--font-mono);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: transparent;
             color: var(--text-color);
             margin: 0;
@@ -27,46 +28,48 @@
         }
 
         .tracker-container {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            background: var(--bg-color);
+            /* Remove border and shadow for seamless Notion integration */
+            border: none;
+            border-radius: 0;
             padding: 16px;
             max-width: 600px;
             margin: 0 auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: none;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
         }
 
         select {
-            background: #2d2d2d;
+            background: var(--item-bg);
             color: var(--text-color);
             border: 1px solid var(--border);
             padding: 6px 10px;
             border-radius: 4px;
-            font-family: var(--font-mono);
-            font-size: 13px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 14px;
             cursor: pointer;
             outline: none;
         }
 
         h2 {
-            font-size: 14px;
+            font-size: 18px;
             margin: 0;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            color: #9cdcfe;
+            font-weight: 700;
+            color: var(--text-color);
         }
 
         .progress-bar-container {
-            background: #2d2d2d;
+            background: var(--item-bg);
             border-radius: 4px;
-            height: 18px;
+            height: 24px;
             width: 100%;
             overflow: hidden;
             margin-bottom: 16px;
@@ -78,64 +81,101 @@
             background: var(--accent);
             height: 100%;
             width: 0%;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .progress-text {
             position: absolute;
             width: 100%;
             text-align: center;
-            font-size: 11px;
-            line-height: 18px;
-            font-weight: bold;
-            color: #000;
-            text-shadow: none;
-            letter-spacing: -0.5px;
+            font-size: 12px;
+            line-height: 24px;
+            font-weight: 600;
+            color: var(--bg-color);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
         }
 
         .tasks-list {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
 
         .task-item {
             display: flex;
             align-items: center;
             background: var(--item-bg);
-            padding: 10px 12px;
+            padding: 12px 14px;
             border-radius: 4px;
             cursor: pointer;
-            border: 1px solid var(--border);
-            transition: background 0.15s ease;
+            border: 1px solid transparent;
+            transition: background 0.2s ease, border-color 0.2s ease;
         }
 
         .task-item:hover {
             background: var(--item-hover);
         }
 
+        /* Custom Checkbox Styling to match Notion clean aesthetic */
         .task-item input {
+            appearance: none; /* Remove default browser styles */
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--accent);
+            border-radius: 4px;
+            background: white;
             cursor: pointer;
-            width: 15px;
-            height: 15px;
-            margin-right: 12px;
-            accent-color: var(--accent);
+            margin-right: 14px;
+            position: relative;
+            transition: background 0.1s ease;
+        }
+
+        .task-item input:checked {
+            background: var(--accent);
+        }
+
+        /* Checkmark icon when checked */
+        .task-item input:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            width: 4px;
+            height: 9px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
         }
 
         .task-icon {
-            font-size: 16px;
-            margin-right: 10px;
+            font-size: 18px;
+            margin-right: 12px;
             display: flex;
             align-items: center;
+            filter: grayscale(100%); /* Icons are subtle until checked */
+            opacity: 0.7;
         }
 
         .task-label {
-            font-size: 13px;
+            font-size: 14px;
             user-select: none;
-            letter-spacing: -0.3px;
+            color: var(--text-color);
+            font-weight: 400;
         }
 
-        .completed-task {
+        /* State when task is completed */
+        .task-item.checked {
+            background-color: rgba(8, 126, 164, 0.05); /* Very faint teal background */
+        }
+        
+        .checked .task-icon {
+            filter: grayscale(0%); /* Icons gain color when checked */
+            opacity: 1;
+        }
+        
+        .checked .task-label {
             text-decoration: line-through;
             color: var(--text-secondary);
         }
@@ -168,6 +208,9 @@
         { id: "writing", label: "Writing Drills", icon: "✍️" }
     ];
 
+    // Track if 100% animation has already played for the current day
+    let hasAnimatedForDay = false;
+
     // Generate dates from Aug 26, 2026 to Sept 9, 2026
     const startDate = new Date(2026, 7, 26);
     const endDate = new Date(2026, 8, 9);
@@ -193,9 +236,19 @@
     const defaultDate = dateList.some(d => d.key === todayStr) ? todayStr : dateList[0].key;
     selectEl.value = defaultDate;
 
+    function playConfetti() {
+        // Trigger a firework-style confetti burst
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#087ea4', '#ffffff', '#b3e5fc'] // Teal, White, Light Blue
+        });
+    }
+
     function renderTracker() {
         const selectedDate = selectEl.value;
-        document.getElementById('date-title').innerText = "// " + dateList.find(d => d.key === selectedDate).label;
+        document.getElementById('date-title').innerText = dateList.find(d => d.key === selectedDate).label;
         
         const listContainer = document.getElementById('tasks-list');
         listContainer.innerHTML = '';
@@ -208,12 +261,12 @@
             if (isChecked) completedCount++;
 
             const item = document.createElement('div');
-            item.className = 'task-item';
+            item.className = `task-item ${isChecked ? 'checked' : ''}`;
             
             item.innerHTML = `
                 <input type="checkbox" id="${task.id}" ${isChecked ? 'checked' : ''} onchange="toggleTask('${task.id}', this.checked)">
                 <span class="task-icon">${task.icon}</span>
-                <span class="task-label ${isChecked ? 'completed-task' : ''}">${task.label}</span>
+                <span class="task-label">${task.label}</span>
             `;
             
             item.onclick = (e) => {
@@ -227,9 +280,18 @@
             listContainer.appendChild(item);
         });
 
+        // Update progress bar
         const percentage = Math.round((completedCount / tasks.length) * 100);
-        document.getElementById('progress-fill').style.width = percentage + '%';
+        const fillElement = document.getElementById('progress-fill');
+        fillElement.style.width = percentage + '%';
         document.getElementById('progress-text').innerText = percentage + '% COMPLETE';
+
+        // Check for completion and trigger animation (only once per day)
+        if (percentage === 100 && !hasAnimatedForDay) {
+            playConfetti();
+            // Set flag so animation doesn't repeat on hover/reload unless date is changed
+            hasAnimatedForDay = true;
+        }
     }
 
     function toggleTask(taskId, isChecked) {
@@ -240,9 +302,12 @@
     }
 
     function changeDate() {
+        // Reset animation flag when user switches to a new day
+        hasAnimatedForDay = false;
         renderTracker();
     }
 
+    // Initial load
     renderTracker();
 </script>
 
