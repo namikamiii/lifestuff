@@ -11,7 +11,7 @@
             --bg-color: #ffffff;
             --text-color: #111111;
             --text-secondary: #777777;
-            --accent: #00bcd4; /* Brighter, vibrant teal */
+            --accent: #00bcd4;
             --accent-glow: rgba(0, 188, 212, 0.2);
             --border: #e0e0e0;
             --item-bg: #fafafa;
@@ -91,7 +91,7 @@
             width: 100%;
             text-align: center;
             font-size: 11px;
-            line-height: 20px;
+            line-height: 18px;
             font-weight: 700;
             color: var(--text-color);
             letter-spacing: 0.5px;
@@ -119,13 +119,12 @@
             border-color: var(--text-color);
         }
 
-        /* Minimalist Jet-Black Empty Checkbox that pops to Teal */
         .task-item input {
             appearance: none;
             -webkit-appearance: none;
             width: 18px;
             height: 18px;
-            border: 2px solid #111111; /* Jet-black box */
+            border: 2px solid #111111;
             border-radius: 3px;
             background: #ffffff;
             cursor: pointer;
@@ -135,7 +134,7 @@
         }
 
         .task-item input:checked {
-            background: var(--accent); /* Pops to bright teal */
+            background: var(--accent);
             border-color: var(--accent);
         }
 
@@ -167,7 +166,7 @@
         }
 
         .task-item.checked {
-            background-color: rgba(0, 188, 212, 0.08); /* Soft teal tint */
+            background-color: rgba(0, 188, 212, 0.08);
             border-color: var(--accent);
         }
         
@@ -248,6 +247,7 @@
 
         let completedCount = 0;
 
+        tasks.push; // safety check
         tasks.forEach(task => {
             const storageKey = `tracker_${selectedDate}_${task.id}`;
             const isChecked = localStorage.getItem(storageKey) === 'true';
@@ -275,7 +275,7 @@
 
         const percentage = Math.round((completedCount / tasks.length) * 100);
         document.getElementById('progress-fill').style.width = percentage + '%';
-        document.getElementById('progress-text'].innerText = percentage + '% COMPLETE';
+        document.getElementById('progress-text').innerText = percentage + '% COMPLETE';
 
         if (percentage === 100 && !hasAnimatedForDay) {
             playConfetti();
